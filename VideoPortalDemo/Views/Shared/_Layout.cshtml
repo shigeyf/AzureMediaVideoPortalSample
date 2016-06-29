@@ -23,6 +23,13 @@
         appInsights.trackPageView();
     </script>
 
+    @if (Request.IsAuthenticated)
+    {
+        <script>
+            appInsights.setAuthenticatedUserContext("@User.Identity.Name".replace(/[,;=| ]+/g, "_"), "@User.Identity.Name".replace(/[,;=| ]+/g, "_"));
+        </script>
+    }
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/modernizr")

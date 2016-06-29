@@ -585,9 +585,9 @@ var appendSourceUrl = function (url) {
 				"disableGeoLocation": true
 			},*/
 			appInsights: {
-				'debug': true,
-				'metricsToTrack': ['playbackSummary', 'loaded', 'viewed', 'ended', 'playTime', 'percentsPlayed', 'play', 'pause', 'seek', 'error', 'fullscreen', 'buffering', 'bitrateQuality', 'downloadInfo'],
-			    'percentsPlayedInterval': 5
+				"debug": true,
+				"metricsToTrack": ['playbackSummary', 'loaded', 'viewed', 'ended', 'playTime', 'percentsPlayed', 'play', 'pause', 'seek', 'error', 'fullscreen', 'buffering', 'bitrateQuality', 'downloadInfo'],
+				"percentsPlayedInterval": 5
 			},
 			ga: {
 				'eventsToTrack': ['playerConfig', 'loaded', 'playTime', 'percentsPlayed', 'start', 'end', 'play', 'pause', 'error', 'buffering', 'fullscreen', 'bitrate'],
