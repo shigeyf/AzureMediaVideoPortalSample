@@ -63,6 +63,7 @@ namespace VideoPortalDemo.Controllers
                 string accessToken = await GetTokenForKeyDelivery();
                 if (accessToken == null)
                 {
+                    ViewBag.ErrorMessage = "AuthorizationRequired";
                     return View(model);
                 }
 

@@ -15,7 +15,7 @@
     return;
 }
 
-<div class="container">
+<div class="container-fluid">
     <!-- share url and embed url -->
     <!--
     <div class="row">
@@ -56,7 +56,7 @@
                                 videoWidth = $(window).width() * 11 / 16;
                             }
                             document.getElementById("videoContainer").style.height = videoWidth + "px";
-                            $("#videoContainer").append('<video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" preload="auto" width="100%" height="100%" poster="" tabindex=0><p class="amp-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p></video>');
+                            $("#videoContainer").append('<video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" width="100%" height="100%" tabindex=0><p class="amp-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p></video>');
                             $(document).ready(function () {
                                 window.addEventListener('resize', function (event) {
                                     if (window.innerWidth < 750) {
@@ -72,10 +72,10 @@
             <div id="copyrightInfo" class="muted"></div>
         </div>
         <div class="col-md-4 well">
-            <h3>Chosen Player Options</h3>
+            <h3 style="margin-top:0">Chosen Player Options</h3>
             <table style="width:100%">
                 <tr>
-                    <td>Source Format:</td>
+                    <td>Format:</td>
                     <td><span id="sourceFormat"></span></td>
                 </tr>
                 <tr>
@@ -86,10 +86,257 @@
                     <td>Protection:</td>
                     <td><span id="protection"></span></td>
                 </tr>
+                <tr>
+                    <td>AMP Version:</td>
+                    <td><span id="ampVersion"></span></td>
+                </tr>
             </table>
         </div>
         <div class="col-md-4">
             <div class="config-body row">
+                <ul class="nav nav-pills">
+
+                    <li class="active menuitem" id="playersetup-button"><a><span class="glyphicon glyphicon-cog"></span> Setup</a></li>
+                    <li class="menuitem" id="playerdiagnostics-button"><a><span class="glyphicon glyphicon-stats"></span> Diagnostics</a></li>
+                </ul>
+                <div class="well" id="playersetup">
+                    <div id="assetConfig" class="form-group adaptive">
+                        <label for="adaptive-url">Adaptive streaming URL from Azure Media Services</label><br /><br />
+                        <div class="row">
+                            <div class="col-sm-2">Samples:</div>
+                            <div class="col-sm-10" id="samplesdropdown">
+                                <select class="form-control" id="selectSource" style="width: 100%">
+                                    <option value="" disabled selected format="auto" aes="none" aestoken="none" playready="none" playreadytoken="none" widevine="none" widevinetoken="none" captions="none" subtitles="none">
+                                        Select a sample
+                                    </option>
+                                    @foreach (var i in Model.VideoList)
+                                    {
+                                        <option value="@(i.Item3)/manifest" format="auto" aes="none" aestoken="none" playready="true" playreadytoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" widevine="true" widevinetoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" captions="none" subtitles="none">
+                                            @i.Item1.Name
+                                        </option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2">URL:</div>
+                            <div class="col-sm-10">
+                                <span><input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="adaptive-url" placeholder="Video/Manifest URL" value="//amssamples.streaming.mediaservices.windows.net/91492735-c523-432b-ba01-faba6c2206a2/AzureMediaServicesPromo.ism/manifest"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-2">
+                                <span id="urlHelp" class="help-block" style="font-size: 0.85em; padding-left: 0.5em;">The URL should contain <i>*.ism/manifest</i> or <i>*.mp4</i></span>
+                            </div>
+                            <div class="col-sm-4">
+                                <span class="help-block" style="float: right; font-size: 0.85em;padding-right:0.5em"><input type="checkbox" name="advanced" value="advanced">Advanced Options</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="advancedOptions">
+
+                        <label for="adaptive-url">Advanced Options </label><span class="help-block" style="font-size: 0.85em;padding-right:0.5em">Please note: not all formats are playable by all techs</span>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-2">Playback:</div>
+                            <div class="col-sm-4">
+                                <select id="heuristicProfile" style="width: 100%" class="form-control">
+                                    <option value="hybrid" selected>Hybrid Heuristic Profile</option>
+                                    <option value="quickstart">Quick Start Heuristic Profile</option>
+                                    <option value="highquality">High Quality Heuristic Profile</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6" style="padding-top:6.4px">
+                                <input type="checkbox" name="autoplay" value="enable"> AutoPlay (if applicable)
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2">Format:</div>
+                            <div class="col-sm-4">
+                                <select id="selectFormat" style="width: 100%" class="form-control">
+                                    <option value="auto" selected>Azure Auto-Generated</option>
+                                    <option value="dash">DASH</option>
+                                    <option value="smooth">Smooth</option>
+                                    <option value="hls">HLS</option>
+                                    <option value="mp4">Progressive MP4</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div id="formatOther" class="col-sm-6" style="padding-top:2px">
+                                <input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="formatOtherVal" placeholder="Mime Type">
+                            </div>
+                            <div id="urlRewriter" class="col-sm-6" style="padding-top:6.4px">
+                                <input type="checkbox" name="disableUrlRewriter" value="disable"> Disable Automatic URL Rewriter
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2">Tech:</div>
+                            <div class="col-sm-4">
+                                <select id="selectTech" style="width: 100%" class="form-control">
+                                    <option value="auto" selected>Auto Select</option>
+                                    <option value="js">JavaScript + HTML5 (MSE)</option>
+                                    <option value="flash">Flash</option>
+                                    <option value="silverlight">Silverlight</option>
+                                    <option value="html5">Native HTML5 (Type 1)</option>
+                                </select>
+                            </div>
+                            <div id="muted" class="col-sm-6" style="padding-top:6.4px">
+                                <input type="checkbox" name="muted" value="disable"> Muted (on start)
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2">Language:</div>
+                            <div class="col-sm-4">
+                                <select id="selectLang" style="width: 100%" class="form-control">
+                                    <option value='en' selected>English</option>
+                                    <option value='ar'>Arabic</option>
+                                    <option value='bg'>Bulgarian</option>
+                                    <option value='ca'>Catalan</option>
+                                    <option value='cs'>Czech</option>
+                                    <option value='da'>Danish</option>
+                                    <option value='de'>German</option>
+                                    <option value='el'>Greek</option>
+                                    <option value='es'>Spanish</option>
+                                    <option value='et'>Estonian</option>
+                                    <option value='eu'>Basque</option>
+                                    <option value='fa'>Farsi</option>
+                                    <option value='fi'>Finnish</option>
+                                    <option value='fr'>French</option>
+                                    <option value='gl'>Galician</option>
+                                    <option value='he'>Hebrew</option>
+                                    <option value='hu'>Hindi</option>
+                                    <option value='hr'>Croatian</option>
+                                    <option value='hu'>Hungarian</option>
+                                    <option value='id'>Indonesian</option>
+                                    <option value='is'>Icelandic</option>
+                                    <option value='it'>Italian</option>
+                                    <option value='ja'>Japanese</option>
+                                    <option value='kk'>Kazakh</option>
+                                    <option value='ko'>Korean</option>
+                                    <option value='lt'>Lithuanian</option>
+                                    <option value='lv'>Latvian</option>
+                                    <option value='ms'>Malaysian</option>
+                                    <option value='nb'>Norwegian - Bokmål</option>
+                                    <option value='nl'>Dutch</option>
+                                    <option value='nn'>Norwegian- Nynorsk</option>
+                                    <option value='pl'>Polish</option>
+                                    <option value='pt-br'>Portuguese - Brazil</option>
+                                    <option value='pt-pt'>Portuguese - Portugal</option>
+                                    <option value='ro'>Romanian</option>
+                                    <option value='sk'>Slovak</option>
+                                    <option value='sl'>Slovene</option>
+                                    <option value='sr-cyrl-cs'>Serbian - Cyrillic</option>
+                                    <option value='sr-latn-rs'>Serbian - Latin</option>
+                                    <option value='ru'>Russian</option>
+                                    <option value='sv'>Swedish</option>
+                                    <option value='th'>Thai</option>
+                                    <option value='tl'>Tagalog</option>
+                                    <option value='tr'>Turkish</option>
+                                    <option value='uk'>Ukrainian</option>
+                                    <option value='ur'>Urdu</option>
+                                    <option value='vi'>Vietnamese</option>
+                                    <option value='zh-hans'>Chinese - simplified</option>
+                                    <option value='zh-hant'>Chinese - traditional</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2" style="padding-top:3.4px">Protection:</div>
+                            <div class="col-sm-4" style="padding-top:3.4px">
+                                <input type="checkbox" name="protection" value="aes"> AES
+                            </div>
+                            <div class="col-sm-6">
+                                <input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="aesToken" placeholder="AES Token">
+                            </div>
+                            <br /><br />
+                            <div class="col-sm-4 col-sm-offset-2" style="padding-top:3.4px">
+                                <input type="checkbox" name="protection" value="playready"> PlayReady
+                            </div>
+                            <div class="col-sm-6">
+                                <input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="playreadyToken" placeholder="PlayReady Token">
+                            </div>
+                            <br /><br />
+
+                            <div class="col-sm-4 col-sm-offset-2" style="padding-top:3.4px">
+                                <input type="checkbox" name="protection" value="widevine"> Widevine
+                            </div>
+                            <div class="col-sm-6">
+                                <input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="widevineToken" placeholder="Widevine Token">
+                            </div>
+                            <br /><br />
+                        </div>
+                        <br />
+                        <div class="row" id="tracksList">
+                            <div class="col-sm-2">Tracks:</div>
+                            <div class="col-sm-4"><button id="addtrack" type="button" class="btn btn-xs btn-primary">Add Track</button></div>
+                            <br /><br />
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-2">Poster:</div>
+                            <div class="col-sm-10">
+                                <input style="width:100%;display:inline-block" type="text" class="input-sm form-control" id="poster-url" placeholder="Poster URL">
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+
+                    <button id="config-save" type="button" class="btn btn-sm btn-primary">Update Player</button>
+                </div>
+                <div id="playerdiagnostics" class="well">
+                    <div class="row">
+                        <div class="col-md-8 col-md-push-4">
+                            <div class="graphsRow" style="font-size:0.75em">
+                                <div id="BWGraphs" class="graphsDiv">
+                                    <div class="graphLegendDiv">
+                                        <div id="BWGraphsLegendDiv"></div>
+                                    </div>
+                                    <div id="BWGraphsDiv" style="height:150px"></div>
+                                </div>
+                                <br />
+                                <div id="BufferGraphs" class="graphsDiv">
+                                    <div class="graphLegendDiv">
+                                        <div id="BufferGraphsLegendDiv"></div>
+                                    </div>
+                                    <div id="BufferGraphsDiv" style="height: 150px"></div>
+                                </div>
+                            </div>
+                            <br />
+                            <textarea id="txtLog" style="width:100%" rows="6"></textarea>
+                            <br />
+                            <br />
+                            <button id="download-logs" type="button" class="btn btn-sm btn-primary">Download Verbose Logs</button>
+                            <a id="downloadlink" style="display:none;">Click or Right click to Save As</a>
+                            <br />
+                            <br />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button id="email-logs" type="button" class="btn btn-sm btn-primary" disabled>Email Verbose Logs</button>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input style="width:100%;display:inline-block" type="text" name="emailAddress" class="input-sm form-control" id="emailAddress" placeholder="Email Address">
+                                </div>
+                                <br />
+                                <div id="email-success" style="display:none;color:red"></div>
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-4 col-md-pull-8">
+                            <div id="propertiesDiv"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--
                 <div class="well">
 
                     <div id="assetConfig" class="form-group adaptive">
@@ -182,6 +429,7 @@
                     </div>
                     <button id="config-save" type="button" class="btn btn-sm btn-primary">update player</button>
                 </div>
+                 -->
             </div>
         </div>
     </div>
@@ -216,7 +464,21 @@
     </div>
 </div>
 
-<script src="/js/amp/main.js"></script>
+<!-- <script src="/js/amp/main.js"></script> -->
+
+<!--Save Diagnostic Logs-->
+<script src="/Scripts/FileSaver.min.js"></script>
+
+<!--Diagnostics Display -->
+<script src="/Scripts/dygraph-combined.js"></script>
+<script src="/Scripts/synchronizer.js"></script>
+
+<!--Demo Page Scripts-->
+<script src="/js/amp/samples.js"></script>
+<script src="/js/amp/languages.js"></script>
+<script src="/js/amp/PrettyPrint.js"></script>
+<script src="/js/amp/main-amp.js"></script>
+
 
 <!--
 <div class="jumbotron">
