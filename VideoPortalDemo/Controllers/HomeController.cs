@@ -51,7 +51,7 @@ namespace VideoPortalDemo.Controllers
         private string mediaServicesKey = ConfigurationManager.AppSettings["ams:MediaServicesKey"];
         // added by shigeyf@microsoft.com to the original template
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             // added by shigeyf@microsoft.com to the original template
             //Initializing a model
@@ -61,7 +61,7 @@ namespace VideoPortalDemo.Controllers
 
             try
             {
-                string accessToken = await GetTokenForKeyDelivery();
+                string accessToken = GetTokenForKeyDelivery();
                 if (accessToken == null)
                 {
                     ViewBag.ErrorMessage = "AuthorizationRequired";
@@ -147,7 +147,7 @@ namespace VideoPortalDemo.Controllers
 
 
         // added by shigeyf@microsoft.com to the original template
-        private async Task<string> GetTokenForApplication()
+        private string GetTokenForApplication()
         {
             string signedInUserID = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
@@ -157,7 +157,7 @@ namespace VideoPortalDemo.Controllers
             ClientCredential clientcred = new ClientCredential(clientId, appKey);
             // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
             AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
-            AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(graphResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenSilent(graphResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             if (authenticationResult == null)
             {
@@ -179,7 +179,7 @@ namespace VideoPortalDemo.Controllers
         }
 
         // added by shigeyf@microsoft.com to the original template
-        private async Task<string> GetTokenForKeyDelivery()
+        private string GetTokenForKeyDelivery()
         {
             string signedInUserID = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
@@ -189,7 +189,7 @@ namespace VideoPortalDemo.Controllers
             ClientCredential clientcred = new ClientCredential(clientId, appKey);
             // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
             AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
-            AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenSilentAsync(kdResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenSilent(kdResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             if (authenticationResult == null)
             {
