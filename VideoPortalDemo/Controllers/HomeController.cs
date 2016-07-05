@@ -57,6 +57,7 @@ namespace VideoPortalDemo.Controllers
             //Initializing a model
             VideoPortalDemoModel model = new VideoPortalDemoModel();
             model.VideoList = new List<Tuple<IAsset, ILocator, Uri, string>>();
+            model.StreamingEndPoint = null;
 
             try
             {

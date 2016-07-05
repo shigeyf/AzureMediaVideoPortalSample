@@ -88,12 +88,15 @@ namespace VideoPortalDemo
                            string kdAccessToken = kdAPiresult.AccessToken;
                            System.IdentityModel.Tokens.JwtSecurityToken kdAccessJwtToken = new System.IdentityModel.Tokens.JwtSecurityToken(kdAccessToken);
 
-                           // Initializing MediaServicesCredentials in order to obtain access token to be used to connect 
-                           var amsCredentials = new MediaServicesCredentials(mediaServicesAccount, mediaServicesKey);
-                           // Forces to get access token
-                           amsCredentials.RefreshToken();
-                           //Adding media services access token as claim so it can be accessible within controller
-                           context.AuthenticationTicket.Identity.AddClaim(new System.Security.Claims.Claim(VideoPortalDemo.Configurations.ClaimsAmsAcessToken, amsCredentials.AccessToken));
+                           try {
+                               // Initializing MediaServicesCredentials in order to obtain access token to be used to connect 
+                               var amsCredentials = new MediaServicesCredentials(mediaServicesAccount, mediaServicesKey);
+                               // Forces to get access token
+                               amsCredentials.RefreshToken();
+                               //Adding media services access token as claim so it can be accessible within controller
+                               context.AuthenticationTicket.Identity.AddClaim(new System.Security.Claims.Claim(VideoPortalDemo.Configurations.ClaimsAmsAcessToken, amsCredentials.AccessToken));
+                           }
+                           catch { }
 
                            //context.AuthenticationTicket.Identity.AddClaim(
                            //    new System.Security.Claims.Claim("KdAccessJwtSecurityTokenClaim", kdAccessJwtToken.RawData));
