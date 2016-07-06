@@ -111,11 +111,25 @@
                                     </option>
                                     @foreach (var i in Model.VideoList)
                                     {
-                                        <option value="@(i.Item3)/manifest" format="auto" aes="none" aestoken="none" playready="true" playreadytoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" widevine="true" widevinetoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" captions="none" subtitles="none">
-                                            @i.Item1.Name
-                                        </option>
+                                        if (i.Item4 == "drm")
+                                        {
+                                            <option value="@(i.Item3)/manifest" format="auto" aes="none" aestoken="none" playready="true" playreadytoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" widevine="true" widevinetoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" captions="none" subtitles="none">
+                                                @i.Item1.Name
+                                            </option>
+                                        }
+                                        else if (i.Item4 == "aes")
+                                        {
+                                            <option value="@(i.Item3)/manifest" format="auto" aes="true" aestoken="Bearer%3D@(Model.KdAccessJwtToken.RawData)" playready="none" playreadytoken="none" widevine="none" widevinetoken="none" captions="none" subtitles="none">
+                                                @i.Item1.Name
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@(i.Item3)/manifest" format="auto" aes="none" aestoken="none" playready="nonee" playreadytoken="none" widevine="none" widevinetoken="none" captions="none" subtitles="none">
+                                                @i.Item1.Name
+                                            </option>
+                                        }
                                     }
-
                                 </select>
                             </div>
                         </div>
@@ -335,101 +349,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!--
-                <div class="well">
-
-                    <div id="assetConfig" class="form-group adaptive">
-
-                        <label for="adaptive-url">Adaptive streaming URL from Azure Media Services</label><br /><br />
-
-                        <div class="row">
-                            <div class="col-md-2">Samples:</div>
-                            <div class="col-md-10">
-                                <select class="form-control" id="selectSource" style="width: 100%">
-                                    <option value=" " disabled selected format="auto" protection="none" token="none" audiolabel="none">
-                                        Select an asset in the library
-                                    </option>
-                                    @foreach (var i in Model.VideoList)
-                                    {
-                                    <option value="@(i.Item3)/manifest" format="auto" protection="@(i.Item4)" token="Bearer%3D@(Model.KdAccessJwtToken.RawData)" audiolabel="none">
-                                        @i.Item1.Name
-                                    </option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-2">URL:</div>
-                            <div class="col-md-10">
-                                <span><input style="color:grey;width:100%;display:inline-block" type="text" class="input-sm form-control" id="adaptive-url" value="//amssamples.streaming.mediaservices.windows.net/91492735-c523-432b-ba01-faba6c2206a2/AzureMediaServicesPromo.ism/manifest"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-md-offset-2">
-                                <span id="urlHelp" class="help-block" style="font-size: 0.85em; padding-left: 0.5em;">The URL should contain <i>*.ism/manifest</i> or <i>*.mp4</i></span>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="help-block" style="float: right; font-size: 0.85em;padding-right:0.5em"><input type="checkbox" name="advanced" value="advanced">Advanced Options</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="advancedOptions">
-
-                        <label for="adaptive-url">Advanced Options </label><span class="help-block" style="font-size: 0.85em;padding-right:0.5em">Please note: not all formats are playable by all techs</span>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-2">Format:</div>
-                            <div class="col-md-6">
-                                <select id="selectFormat" style="width: 100%" class="form-control">
-                                    <option value="auto" selected>Azure Auto-Generated</option>
-                                    <option value="dash">DASH</option>
-                                    <option value="smooth">Smooth</option>
-                                    <option value="hls">HLS</option>
-                                    <option value="mp4">Progressive MP4</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div id="formatOther" class="col-md-4">
-                                <input style="color:grey;width:100%;display:inline-block" type="text" class="input-sm form-control" id="formatOtherVal" placeholder="MIME_Type">
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-2">Tech:</div>
-                            <div class="col-md-6">
-                                <select id="selectTech" style="width: 100%" class="form-control">
-                                    <option value="auto" selected>Auto Select</option>
-                                    <option value="js">JavaScript + HTML5 (MSE)</option>
-                                    <option value="flash">Flash</option>
-                                    <option value="silverlight">Silverlight</option>
-                                    <option value="html5">Native HTML5 (Type 1)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-2">Protection:</div>
-                            <div class="col-md-6">
-                                <select id="selectContentProtection" style="width: 100%" class="form-control">
-                                    <option value="none" selected>None</option>
-                                    <option value="aes">AES</option>
-                                    <option value="playready">PlayReady</option>
-                                    <option value="widevine">Widevine</option>
-                                    <option value="drm">DRM (PlayReady and Widevine)</option>
-                                </select>
-                            </div>
-                            <div id="protectionOther" class="col-md-4">
-                                <input style="color:grey;width:100%;display:inline-block" type="text" class="input-sm form-control" id="token" placeholder="Token">
-                            </div>
-                        </div>
-                        <br /><br />
-                    </div>
-                    <button id="config-save" type="button" class="btn btn-sm btn-primary">update player</button>
-                </div>
-                 -->
             </div>
         </div>
     </div>

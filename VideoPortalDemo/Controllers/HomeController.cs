@@ -83,7 +83,7 @@ namespace VideoPortalDemo.Controllers
                     //{
                     //    return;
                     //}
-                    if (file.Asset.AssetType != AssetType.MultiBitrateMP4)
+                    if (file.Asset.AssetType != AssetType.MultiBitrateMP4 && file.Asset.AssetType != AssetType.SmoothStreaming)
                     {
                         return;
                     }
@@ -153,13 +153,18 @@ namespace VideoPortalDemo.Controllers
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
 
-            // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
-            ClientCredential clientcred = new ClientCredential(clientId, appKey);
-            // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
-            AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
-            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenSilent(graphResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
-
-            if (authenticationResult == null)
+            AuthenticationContext authenticationContext = null;
+            AuthenticationResult authenticationResult = null;
+            try
+            {
+                // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
+                ClientCredential clientcred = new ClientCredential(clientId, appKey);
+                // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
+                authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
+                authenticationResult = authenticationContext.AcquireTokenSilent(graphResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+                if (authenticationResult == null) throw new Exception();
+            }
+            catch
             {
                 authenticationContext.TokenCache.Clear();
                 ViewBag.ErrorMessage = "AuthorizationRequired";
@@ -185,15 +190,20 @@ namespace VideoPortalDemo.Controllers
             string tenantID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string userObjectID = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
 
-            // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
-            ClientCredential clientcred = new ClientCredential(clientId, appKey);
-            // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
-            AuthenticationContext authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
-            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenSilent(kdResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
-
-            if (authenticationResult == null)
+            AuthenticationContext authenticationContext = null;
+            AuthenticationResult authenticationResult = null;
+            try
             {
-                authenticationContext.TokenCache.Clear();
+                // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
+                ClientCredential clientcred = new ClientCredential(clientId, appKey);
+                // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's database
+                authenticationContext = new AuthenticationContext(aadInstance + tenantID, new ADALTokenCache(signedInUserID));
+                authenticationResult = authenticationContext.AcquireTokenSilent(kdResourceId, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+                if (authenticationResult == null) throw new Exception();
+            }
+            catch
+            {
+                if (authenticationContext != null) authenticationContext.TokenCache.Clear();
                 ViewBag.ErrorMessage = "AuthorizationRequired";
                 if (Request.QueryString["reauth"] == "True")
                 {
